@@ -5,13 +5,13 @@ set -euo pipefail
 # Usage: ./scripts/auto-commit-push.sh [branch]
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
-BRANCH="${1:-$(git rev-parse --abbrev-ref HEAD)}"
+BRANCH="${1:-main}"
 INTERVAL_SECONDS="${INTERVAL_SECONDS:-3}"
 
 cd "$ROOT_DIR"
 
 echo "[auto-commit-push] Monitoring: $ROOT_DIR"
-echo "[auto-commit-push] Branch: $BRANCH"
+echo "[auto-commit-push] Remote branch target: $BRANCH"
 echo "[auto-commit-push] Poll interval: ${INTERVAL_SECONDS}s"
 
 auto_commit_push() {
@@ -27,8 +27,8 @@ auto_commit_push() {
 
   timestamp="$(date -u +"%Y-%m-%d %H:%M:%S UTC")"
   git commit -m "chore: auto commit ${timestamp}"
-  git push origin "$BRANCH"
-  echo "[auto-commit-push] Committed and pushed at $timestamp"
+  git push -u origin "HEAD:${BRANCH}"
+  echo "[auto-commit-push] Committed and pushed to origin/${BRANCH} at $timestamp"
 }
 
 trap 'echo; echo "[auto-commit-push] Stopping monitor."; exit 0' INT TERM

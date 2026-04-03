@@ -10,7 +10,9 @@ Foi adicionado um monitor para automatizar `git add`, `commit` e `push` sempre q
 npm run auto:commit:push
 ```
 
-Opcionalmente, você pode passar uma branch:
+Por padrão, o push é feito para a branch remota `origin/main`.
+
+Opcionalmente, você pode passar outra branch:
 
 ```bash
 bash ./scripts/auto-commit-push.sh minha-branch
