@@ -1,3 +1,9 @@
+export interface CustomField {
+  id: string;
+  label: string;
+  value: string;
+}
+
 export interface PersonalInfo {
   fullName: string;
   jobTitle: string;
@@ -7,6 +13,7 @@ export interface PersonalInfo {
   linkedin: string;
   website: string;
   photoUrl: string | null;
+  customFields: CustomField[];
 }
 
 export interface ExperienceItem {

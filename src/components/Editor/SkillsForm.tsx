@@ -1,8 +1,8 @@
-import { useResumeStore } from '../../stores/useResumeStore';
+import { useActiveResume, useResumeStore } from '../../stores/useResumeStore';
 import { Plus, Trash2, Star, Languages, Zap, X } from 'lucide-react';
 
 const SkillsForm = () => {
-  const resume = useResumeStore((s) => s.activeResume());
+  const resume = useActiveResume();
   const { addSkill, updateSkill, removeSkill, addLanguage, updateLanguage, removeLanguage } = useResumeStore();
 
   if (!resume) return null;

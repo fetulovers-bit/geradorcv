@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useResumeStore } from '../stores/useResumeStore';
+import { useActiveResume, useResumeStore } from '../stores/useResumeStore';
 import PersonalInfoForm from '../components/Editor/PersonalInfoForm';
 import ExperienceForm from '../components/Editor/ExperienceForm';
 import EducationForm from '../components/Editor/EducationForm';
@@ -19,8 +19,8 @@ const TAB_CONFIG = [
 ];
 
 const ResumeBuilder = () => {
-  const { activeResume, createResume, loadSampleData } = useResumeStore();
-  const resume = activeResume();
+  const { createResume, loadSampleData } = useResumeStore();
+  const resume = useActiveResume();
   const [tab, setTab] = useState<Tab>('personal');
   const [mobileView, setMobileView] = useState<MobileView>('edit');
 

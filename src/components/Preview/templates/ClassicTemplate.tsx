@@ -39,6 +39,13 @@ const ClassicTemplate = ({ data, theme }: Props) => {
               <span key={idx} className="flex items-center gap-1"><I size={10} />{v}</span>
           ))}
         </div>
+        {p.customFields.filter((field) => field.label || field.value).length > 0 && (
+          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-gray-600" style={{ fontSize: `${9.5 * fs}px` }}>
+            {p.customFields.filter((field) => field.label || field.value).map((field) => (
+              <span key={field.id}><span className="font-semibold">{field.label || 'Extra'}:</span> {field.value}</span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div style={{ gap: sp, display: 'flex', flexDirection: 'column' }}>

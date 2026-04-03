@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
   ResumeData, PersonalInfo, ExperienceItem, EducationItem,
-  CertificationItem, SkillItem, LanguageItem, ProjectItem, SectionKey,
+  CertificationItem, SkillItem, LanguageItem, ProjectItem, SectionKey, CustomField,
 } from '../types/resume';
 
 const genId = () => Math.random().toString(36).substr(2, 9);
@@ -13,7 +13,7 @@ const DEFAULT_ORDER: SectionKey[] = [
 
 const createDefault = (): ResumeData => ({
   id: genId(), name: 'Meu Currículo', createdAt: Date.now(), updatedAt: Date.now(),
-  personalInfo: { fullName: '', jobTitle: '', phone: '', email: '', location: '', linkedin: '', website: '', photoUrl: null },
+  personalInfo: { fullName: '', jobTitle: '', phone: '', email: '', location: '', linkedin: '', website: '', photoUrl: null, customFields: [] },
   summary: '', experience: [], education: [], certifications: [], skills: [], languages: [], projects: [],
   additionalInfo: '', sectionOrder: [...DEFAULT_ORDER],
 });
@@ -29,6 +29,9 @@ interface ResumeStore {
   updateSummary: (s: string) => void;
   updateAdditionalInfo: (s: string) => void;
   updatePhoto: (url: string | null) => void;
+  addCustomField: () => void;
+  updateCustomField: (id: string, data: Partial<CustomField>) => void;
+  removeCustomField: (id: string) => void;
   addExperience: (item?: Partial<ExperienceItem>) => void;
   updateExperience: (id: string, data: Partial<ExperienceItem>) => void;
   removeExperience: (id: string) => void;
@@ -72,6 +75,24 @@ export const useResumeStore = create<ResumeStore>()(
         updateSummary: (summary) => updateActive(() => ({ summary })),
         updateAdditionalInfo: (additionalInfo) => updateActive(() => ({ additionalInfo })),
         updatePhoto: (url) => updateActive((r) => ({ personalInfo: { ...r.personalInfo, photoUrl: url } })),
+        addCustomField: () => updateActive((r) => ({
+          personalInfo: {
+            ...r.personalInfo,
+            customFields: [...r.personalInfo.customFields, { id: genId(), label: '', value: '' }],
+          },
+        })),
+        updateCustomField: (id, data) => updateActive((r) => ({
+          personalInfo: {
+            ...r.personalInfo,
+            customFields: r.personalInfo.customFields.map((f) => (f.id === id ? { ...f, ...data } : f)),
+          },
+        })),
+        removeCustomField: (id) => updateActive((r) => ({
+          personalInfo: {
+            ...r.personalInfo,
+            customFields: r.personalInfo.customFields.filter((f) => f.id !== id),
+          },
+        })),
 
         addExperience: (item) => updateActive((r) => ({ experience: [...r.experience, { id: genId(), company: '', position: '', startDate: '', endDate: '', current: false, description: '', highlights: [], ...item }] })),
         updateExperience: (id, data) => updateActive((r) => ({ experience: r.experience.map((e) => e.id === id ? { ...e, ...data } : e) })),
@@ -106,6 +127,10 @@ export const useResumeStore = create<ResumeStore>()(
               phone: '(11) 99876-5432', email: 'ana.silva@email.com',
               location: 'São Paulo, SP', linkedin: 'linkedin.com/in/anasilva',
               website: 'anasilva.dev', photoUrl: null,
+              customFields: [
+                { id: genId(), label: 'GitHub', value: 'github.com/anasilva' },
+                { id: genId(), label: 'Portfólio', value: 'behance.net/anasilva' },
+              ],
             },
             summary: 'Desenvolvedora Full Stack com 5 anos de experiência em React, Node.js e TypeScript. Apaixonada por criar interfaces intuitivas e sistemas escaláveis.',
             experience: [
@@ -134,3 +159,6 @@ export const useResumeStore = create<ResumeStore>()(
     { name: 'resumeforge-data' }
   )
 );
+
+
+export const useActiveResume = () => useResumeStore((s) => s.resumes.find((r) => r.id === s.activeResumeId) ?? null);

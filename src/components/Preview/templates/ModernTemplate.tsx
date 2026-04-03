@@ -38,6 +38,17 @@ const ModernTemplate = ({ data, theme }: Props) => {
             ))}
           </div>
 
+          {p.customFields.filter((field) => field.label || field.value).length > 0 && (
+            <div className="mt-4 space-y-1.5" style={{ fontSize: `${9.5 * fs}px` }}>
+              {p.customFields.filter((field) => field.label || field.value).map((field) => (
+                <div key={field.id} className="flex gap-1.5 opacity-90">
+                  <span className="font-semibold">{field.label || 'Extra'}:</span>
+                  <span className="break-all">{field.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {data.skills.length > 0 && (
             <div className="mt-6">
               <h3 className="font-bold uppercase tracking-widest mb-3 pb-1.5 border-b border-white/20" style={{ fontSize: `${10 * fs}px` }}>Habilidades</h3>
