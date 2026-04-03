@@ -1,5 +1,5 @@
 import { useResumeStore } from '../../stores/useResumeStore';
-import { FileText, MessageSquare } from 'lucide-react';
+import { FileText, MessageSquare, AlignLeft } from 'lucide-react';
 
 const SummaryForm = () => {
   const resume = useResumeStore((s) => s.activeResume());
@@ -9,24 +9,38 @@ const SummaryForm = () => {
 
   return (
     <div className="space-y-4">
-      <div className="section-card animate-fade-in">
-        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-3">
-          <FileText size={18} className="text-primary" /> Resumo Profissional
-        </h3>
+      <div className="section-card">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="empty-state-icon !w-10 !h-10 !mb-0 !rounded-xl">
+            <AlignLeft size={18} />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-foreground">Resumo Profissional</h3>
+            <p className="text-xs text-muted-foreground">Um breve parágrafo sobre você</p>
+          </div>
+        </div>
         <textarea
-          className="input-field min-h-[120px] resize-none"
+          className="input-field min-h-[100px] resize-none leading-relaxed"
           placeholder="Escreva um breve resumo sobre você, suas principais competências e objetivos profissionais..."
           value={resume.summary}
           onChange={(e) => updateSummary(e.target.value)}
         />
+        <p className="text-[10px] text-muted-foreground mt-1.5 text-right">{resume.summary.length}/500 caracteres</p>
       </div>
-      <div className="section-card animate-fade-in">
-        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-3">
-          <MessageSquare size={18} className="text-primary" /> Informações Complementares
-        </h3>
+
+      <div className="section-card">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="empty-state-icon !w-10 !h-10 !mb-0 !rounded-xl">
+            <MessageSquare size={18} />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-foreground">Informações Extra</h3>
+            <p className="text-xs text-muted-foreground">Hobbies, voluntariado, etc.</p>
+          </div>
+        </div>
         <textarea
-          className="input-field min-h-[80px] resize-none"
-          placeholder="Hobbies, voluntariado, disponibilidade para viagens, etc."
+          className="input-field min-h-[70px] resize-none leading-relaxed"
+          placeholder="Hobbies, voluntariado, disponibilidade para viagens..."
           value={resume.additionalInfo}
           onChange={(e) => updateAdditionalInfo(e.target.value)}
         />

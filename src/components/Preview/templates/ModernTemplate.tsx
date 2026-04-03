@@ -3,107 +3,125 @@ import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
 
 interface Props { data: ResumeData; theme: ThemeConfig; }
 
-const LANG_LABELS: Record<string, string> = {
-  basico: 'Básico', intermediario: 'Intermediário', avancado: 'Avançado', fluente: 'Fluente', nativo: 'Nativo',
-};
-
-const fontSize = (t: ThemeConfig) => t.fontSize === 'small' ? 'text-[10px]' : t.fontSize === 'large' ? 'text-[13px]' : 'text-[11.5px]';
-const spacing = (t: ThemeConfig) => t.spacing === 'compact' ? 'gap-2' : t.spacing === 'relaxed' ? 'gap-5' : 'gap-3.5';
+const LANG: Record<string, string> = { basico: 'Básico', intermediario: 'Intermediário', avancado: 'Avançado', fluente: 'Fluente', nativo: 'Nativo' };
 
 const ModernTemplate = ({ data, theme }: Props) => {
   const { personalInfo: p } = data;
-  const fs = fontSize(theme);
-  const sp = spacing(theme);
-  const color = theme.primaryColor;
-
-  const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-[13px] font-bold uppercase tracking-wider mb-2 pb-1 border-b-2" style={{ color, borderColor: color + '40', fontFamily: theme.fontFamily }}>{children}</h3>
-  );
+  const c = theme.primaryColor;
+  const ff = theme.fontFamily;
+  const fs = theme.fontSize === 'small' ? 0.88 : theme.fontSize === 'large' ? 1.08 : 1;
+  const sp = theme.spacing === 'compact' ? '12px' : theme.spacing === 'relaxed' ? '24px' : '16px';
 
   return (
-    <div className={`w-full h-full bg-white flex ${fs}`} style={{ fontFamily: theme.fontFamily }}>
+    <div className="w-full h-full bg-white flex" style={{ fontFamily: ff, fontSize: `${11 * fs}px`, lineHeight: 1.5 }}>
       {/* Sidebar */}
-      <div className="w-[34%] p-5 text-white flex flex-col" style={{ backgroundColor: color }}>
-        <div className="mb-5">
-          <h1 className="text-[18px] font-bold leading-tight">{p.fullName || 'Seu Nome'}</h1>
-          <p className="text-[11px] opacity-90 mt-1 font-medium">{p.jobTitle || 'Seu Cargo'}</p>
-        </div>
-        <div className="space-y-1.5 text-[10px]">
-          {p.email && <div className="flex items-center gap-1.5"><Mail size={10} /><span className="break-all">{p.email}</span></div>}
-          {p.phone && <div className="flex items-center gap-1.5"><Phone size={10} /><span>{p.phone}</span></div>}
-          {p.location && <div className="flex items-center gap-1.5"><MapPin size={10} /><span>{p.location}</span></div>}
-          {p.linkedin && <div className="flex items-center gap-1.5"><Linkedin size={10} /><span className="break-all">{p.linkedin}</span></div>}
-          {p.website && <div className="flex items-center gap-1.5"><Globe size={10} /><span className="break-all">{p.website}</span></div>}
-        </div>
-
-        {data.skills.length > 0 && (
-          <div className="mt-5">
-            <h3 className="text-[12px] font-bold uppercase tracking-wider mb-2 pb-1 border-b border-white/30">Habilidades</h3>
-            <div className="space-y-1.5">
-              {data.skills.map((s) => (
-                <div key={s.id}>
-                  <div className="flex justify-between text-[10px] mb-0.5"><span>{s.name}</span></div>
-                  <div className="h-1 bg-white/20 rounded-full"><div className="h-full bg-white/80 rounded-full" style={{ width: `${s.level * 20}%` }} /></div>
-                </div>
-              ))}
+      <div className="w-[35%] p-6 text-white flex flex-col relative overflow-hidden" style={{ backgroundColor: c }}>
+        <div className="absolute inset-0 opacity-10" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)' }} />
+        <div className="relative z-10">
+          {theme.showPhoto && p.photoUrl && (
+            <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white/30 mb-4 mx-auto">
+              <img src={p.photoUrl} alt="" className="w-full h-full object-cover" />
             </div>
-          </div>
-        )}
+          )}
+          <h1 className="font-bold leading-tight" style={{ fontSize: `${20 * fs}px` }}>{p.fullName || 'Seu Nome'}</h1>
+          <p className="opacity-85 mt-1 font-medium" style={{ fontSize: `${11 * fs}px` }}>{p.jobTitle || 'Seu Cargo'}</p>
 
-        {data.languages.length > 0 && (
-          <div className="mt-5">
-            <h3 className="text-[12px] font-bold uppercase tracking-wider mb-2 pb-1 border-b border-white/30">Idiomas</h3>
-            <div className="space-y-1 text-[10px]">
-              {data.languages.map((l) => (
-                <div key={l.id} className="flex justify-between"><span>{l.name}</span><span className="opacity-80">{LANG_LABELS[l.level]}</span></div>
-              ))}
-            </div>
+          <div className="mt-5 space-y-2" style={{ fontSize: `${9.5 * fs}px` }}>
+            {[
+              { icon: Mail, val: p.email },
+              { icon: Phone, val: p.phone },
+              { icon: MapPin, val: p.location },
+              { icon: Linkedin, val: p.linkedin },
+              { icon: Globe, val: p.website },
+            ].filter(x => x.val).map(({ icon: I, val }, i) => (
+              <div key={i} className="flex items-start gap-2 opacity-90"><I size={10} className="mt-0.5 flex-shrink-0" /><span className="break-all leading-tight">{val}</span></div>
+            ))}
           </div>
-        )}
+
+          {data.skills.length > 0 && (
+            <div className="mt-6">
+              <h3 className="font-bold uppercase tracking-widest mb-3 pb-1.5 border-b border-white/20" style={{ fontSize: `${10 * fs}px` }}>Habilidades</h3>
+              <div className="space-y-2">
+                {data.skills.map((s) => (
+                  <div key={s.id}>
+                    <p className="mb-0.5" style={{ fontSize: `${9.5 * fs}px` }}>{s.name}</p>
+                    <div className="h-1.5 bg-white/15 rounded-full overflow-hidden">
+                      <div className="h-full bg-white/70 rounded-full transition-all" style={{ width: `${s.level * 20}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {data.languages.length > 0 && (
+            <div className="mt-6">
+              <h3 className="font-bold uppercase tracking-widest mb-3 pb-1.5 border-b border-white/20" style={{ fontSize: `${10 * fs}px` }}>Idiomas</h3>
+              <div className="space-y-1">
+                {data.languages.map((l) => (
+                  <div key={l.id} className="flex justify-between" style={{ fontSize: `${9.5 * fs}px` }}>
+                    <span>{l.name}</span><span className="opacity-70">{LANG[l.level]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Main content */}
-      <div className={`flex-1 p-5 flex flex-col ${sp} text-gray-800`}>
+      {/* Main */}
+      <div className="flex-1 p-6 text-gray-800" style={{ gap: sp, display: 'flex', flexDirection: 'column' }}>
         {data.summary && (
-          <div><SectionTitle>Resumo</SectionTitle><p className="leading-relaxed text-gray-600">{data.summary}</p></div>
+          <Section title="Resumo" color={c} ff={ff} fs={fs}>
+            <p className="text-gray-600 leading-relaxed">{data.summary}</p>
+          </Section>
         )}
         {data.experience.length > 0 && (
-          <div>
-            <SectionTitle>Experiência</SectionTitle>
-            <div className={sp}>
-              {data.experience.map((exp) => (
-                <div key={exp.id}>
-                  <div className="flex justify-between items-start">
-                    <div><p className="font-semibold text-gray-900 text-[12px]">{exp.position}</p><p className="text-gray-500 text-[10px]">{exp.company}</p></div>
-                    <span className="text-[9px] text-gray-400 whitespace-nowrap">{exp.startDate} — {exp.current ? 'Atual' : exp.endDate}</span>
+          <Section title="Experiência" color={c} ff={ff} fs={fs}>
+            <div style={{ gap: sp, display: 'flex', flexDirection: 'column' }}>
+              {data.experience.map((e) => (
+                <div key={e.id}>
+                  <div className="flex justify-between items-baseline">
+                    <p className="font-semibold text-gray-900" style={{ fontSize: `${12 * fs}px` }}>{e.position}</p>
+                    <span className="text-gray-400 flex-shrink-0 ml-2" style={{ fontSize: `${9 * fs}px` }}>{e.startDate} — {e.current ? 'Atual' : e.endDate}</span>
                   </div>
-                  {exp.description && <p className="mt-1 text-gray-600 leading-relaxed">{exp.description}</p>}
+                  <p className="text-gray-500 italic" style={{ fontSize: `${10 * fs}px` }}>{e.company}</p>
+                  {e.description && <p className="mt-1 text-gray-600 leading-relaxed">{e.description}</p>}
                 </div>
               ))}
             </div>
-          </div>
+          </Section>
         )}
         {data.education.length > 0 && (
-          <div>
-            <SectionTitle>Formação</SectionTitle>
-            <div className={sp}>
-              {data.education.map((edu) => (
-                <div key={edu.id}>
-                  <div className="flex justify-between items-start">
-                    <div><p className="font-semibold text-gray-900 text-[12px]">{edu.degree} {edu.field && `em ${edu.field}`}</p><p className="text-gray-500 text-[10px]">{edu.institution}</p></div>
-                    <span className="text-[9px] text-gray-400 whitespace-nowrap">{edu.startDate} — {edu.current ? 'Atual' : edu.endDate}</span>
+          <Section title="Formação" color={c} ff={ff} fs={fs}>
+            <div style={{ gap: sp, display: 'flex', flexDirection: 'column' }}>
+              {data.education.map((e) => (
+                <div key={e.id}>
+                  <div className="flex justify-between items-baseline">
+                    <p className="font-semibold text-gray-900" style={{ fontSize: `${12 * fs}px` }}>{e.degree} {e.field && `em ${e.field}`}</p>
+                    <span className="text-gray-400 flex-shrink-0 ml-2" style={{ fontSize: `${9 * fs}px` }}>{e.startDate} — {e.current ? 'Atual' : e.endDate}</span>
                   </div>
+                  <p className="text-gray-500 italic" style={{ fontSize: `${10 * fs}px` }}>{e.institution}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </Section>
         )}
         {data.additionalInfo && (
-          <div><SectionTitle>Informações Complementares</SectionTitle><p className="leading-relaxed text-gray-600">{data.additionalInfo}</p></div>
+          <Section title="Informações" color={c} ff={ff} fs={fs}>
+            <p className="text-gray-600 leading-relaxed">{data.additionalInfo}</p>
+          </Section>
         )}
       </div>
     </div>
   );
 };
+
+const Section = ({ title, color, ff, fs, children }: { title: string; color: string; ff: string; fs: number; children: React.ReactNode }) => (
+  <div>
+    <h3 className="font-bold uppercase tracking-wider mb-2 pb-1 border-b-2" style={{ color, borderColor: color + '30', fontFamily: ff, fontSize: `${12 * fs}px` }}>{title}</h3>
+    {children}
+  </div>
+);
 
 export default ModernTemplate;

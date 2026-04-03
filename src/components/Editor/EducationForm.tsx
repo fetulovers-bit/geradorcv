@@ -1,5 +1,5 @@
 import { useResumeStore } from '../../stores/useResumeStore';
-import { Plus, Trash2, GraduationCap, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, GraduationCap, ChevronDown, Building2, Calendar, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import type { EducationItem } from '../../types/resume';
 
@@ -11,65 +11,103 @@ const EducationForm = () => {
   if (!resume) return null;
 
   return (
-    <div className="section-card animate-fade-in">
+    <div className="section-card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <GraduationCap size={18} className="text-primary" /> Formação Acadêmica
-        </h3>
-        <button onClick={() => addEducation()} className="btn-primary text-sm py-1.5 px-3">
-          <Plus size={14} /> Adicionar
+        <div className="flex items-center gap-3">
+          <div className="empty-state-icon !w-10 !h-10 !mb-0 !rounded-xl">
+            <GraduationCap size={18} />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-foreground">Formação</h3>
+            <p className="text-xs text-muted-foreground">{resume.education.length} {resume.education.length === 1 ? 'item' : 'itens'}</p>
+          </div>
+        </div>
+        <button onClick={() => addEducation()} className="btn-primary text-xs py-2 px-3">
+          <Plus size={13} /> Adicionar
         </button>
       </div>
-      <div className="space-y-3">
-        {resume.education.length === 0 && (
-          <p className="text-center text-muted-foreground py-6 text-sm">Nenhuma formação adicionada.</p>
-        )}
-        {resume.education.map((edu) => (
-          <EducationCard
-            key={edu.id} item={edu}
-            expanded={expandedId === edu.id}
-            onToggle={() => setExpandedId(expandedId === edu.id ? null : edu.id)}
-            onUpdate={(data) => updateEducation(edu.id, data)}
-            onRemove={() => removeEducation(edu.id)}
-          />
-        ))}
-      </div>
+
+      {resume.education.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon"><BookOpen size={20} /></div>
+          <p className="text-sm font-medium text-foreground">Nenhuma formação</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Adicione sua formação acadêmica</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {resume.education.map((edu, i) => (
+            <EducationCard key={edu.id} item={edu} index={i}
+              expanded={expandedId === edu.id}
+              onToggle={() => setExpandedId(expandedId === edu.id ? null : edu.id)}
+              onUpdate={(data) => updateEducation(edu.id, data)}
+              onRemove={() => removeEducation(edu.id)} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-const EducationCard = ({ item, expanded, onToggle, onUpdate, onRemove }: {
-  item: EducationItem; expanded: boolean;
+const EducationCard = ({ item, index, expanded, onToggle, onUpdate, onRemove }: {
+  item: EducationItem; index: number; expanded: boolean;
   onToggle: () => void; onUpdate: (data: Partial<EducationItem>) => void; onRemove: () => void;
 }) => (
-  <div className="border border-border rounded-xl overflow-hidden animate-scale-in">
-    <div className="flex items-center justify-between p-3 bg-secondary/30 cursor-pointer" onClick={onToggle}>
-      <div className="min-w-0">
-        <p className="font-medium text-foreground text-sm truncate">{item.degree || 'Nova Formação'} {item.field && `— ${item.field}`}</p>
-        <p className="text-xs text-muted-foreground truncate">{item.institution || 'Instituição'}</p>
+  <div className={`border rounded-xl overflow-hidden transition-all duration-200 animate-scale-in ${expanded ? 'border-primary/30 shadow-sm' : 'border-border'}`}>
+    <div className="collapsible-header" onClick={onToggle}>
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-xs font-bold text-muted-foreground flex-shrink-0">
+          {index + 1}
+        </div>
+        <div className="min-w-0">
+          <p className="font-medium text-foreground text-sm truncate">{item.degree || 'Nova Formação'} {item.field && `— ${item.field}`}</p>
+          <p className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
+            <Building2 size={10} /> {item.institution || 'Instituição'}
+            {item.current && <span className="badge-success ml-1">Cursando</span>}
+          </p>
+        </div>
       </div>
-      <div className="flex items-center gap-1">
-        <button onClick={(e) => { e.stopPropagation(); onRemove(); }} className="p-1.5 text-destructive hover:bg-destructive/10 rounded-lg transition-colors">
-          <Trash2 size={14} />
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <button onClick={(e) => { e.stopPropagation(); onRemove(); }} className="btn-icon !w-7 !h-7 text-destructive hover:bg-destructive/10">
+          <Trash2 size={13} />
         </button>
-        {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        <div className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
+          <ChevronDown size={15} className="text-muted-foreground" />
+        </div>
       </div>
     </div>
     {expanded && (
-      <div className="p-4 grid gap-3 animate-slide-up">
-        <input className="input-field" placeholder="Instituição" value={item.institution} onChange={(e) => onUpdate({ institution: e.target.value })} />
-        <div className="grid grid-cols-2 gap-3">
-          <input className="input-field" placeholder="Grau (Ex: Bacharelado)" value={item.degree} onChange={(e) => onUpdate({ degree: e.target.value })} />
-          <input className="input-field" placeholder="Área" value={item.field} onChange={(e) => onUpdate({ field: e.target.value })} />
+      <div className="px-4 pb-4 grid gap-3 animate-slide-up">
+        <div>
+          <label className="input-label"><Building2 size={11} /> Instituição</label>
+          <input className="input-field" placeholder="Universidade" value={item.institution} onChange={(e) => onUpdate({ institution: e.target.value })} />
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <input className="input-field" placeholder="Início" value={item.startDate} onChange={(e) => onUpdate({ startDate: e.target.value })} />
-          <input className="input-field" placeholder="Término" value={item.endDate} disabled={item.current} onChange={(e) => onUpdate({ endDate: e.target.value })} />
+          <div>
+            <label className="input-label"><GraduationCap size={11} /> Grau</label>
+            <input className="input-field" placeholder="Bacharelado" value={item.degree} onChange={(e) => onUpdate({ degree: e.target.value })} />
+          </div>
+          <div>
+            <label className="input-label"><BookOpen size={11} /> Área</label>
+            <input className="input-field" placeholder="Ciência da Computação" value={item.field} onChange={(e) => onUpdate({ field: e.target.value })} />
+          </div>
         </div>
-        <label className="flex items-center gap-2 text-sm text-muted-foreground">
-          <input type="checkbox" checked={item.current} onChange={(e) => onUpdate({ current: e.target.checked })} className="accent-primary" /> Cursando
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="input-label"><Calendar size={11} /> Início</label>
+            <input className="input-field" placeholder="2015" value={item.startDate} onChange={(e) => onUpdate({ startDate: e.target.value })} />
+          </div>
+          <div>
+            <label className="input-label"><Calendar size={11} /> Término</label>
+            <input className="input-field" placeholder="2019" value={item.endDate} disabled={item.current} onChange={(e) => onUpdate({ endDate: e.target.value })} />
+          </div>
+        </div>
+        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${item.current ? 'bg-primary border-primary' : 'border-border'}`}>
+            {item.current && <div className="w-1.5 h-1.5 rounded-sm bg-primary-foreground" />}
+          </div>
+          <input type="checkbox" className="sr-only" checked={item.current} onChange={(e) => onUpdate({ current: e.target.checked })} />
+          Cursando atualmente
         </label>
-        <textarea className="input-field min-h-[60px] resize-none" placeholder="Descrição (opcional)" value={item.description} onChange={(e) => onUpdate({ description: e.target.value })} />
       </div>
     )}
   </div>
