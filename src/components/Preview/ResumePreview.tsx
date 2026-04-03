@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useResumeStore } from '../../stores/useResumeStore';
+import { useActiveResume, useResumeStore } from '../../stores/useResumeStore';
 import { useThemeStore } from '../../stores/useThemeStore';
 import ModernTemplate from './templates/ModernTemplate';
 import MinimalistTemplate from './templates/MinimalistTemplate';
@@ -9,7 +9,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const ResumePreview = () => {
-  const resume = useResumeStore((s) => s.activeResume());
+  const resume = useActiveResume();
   const theme = useThemeStore((s) => s.theme);
   const previewRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
@@ -32,9 +32,24 @@ const ResumePreview = () => {
       const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff', width: el.scrollWidth, height: el.scrollHeight });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const w = pdf.internal.pageSize.getWidth();
-      const h = pdf.internal.pageSize.getHeight();
-      pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pdfHeight;
+      }
+
       pdf.save(`${resume.personalInfo.fullName || 'curriculo'}.pdf`);
     } catch (err) {
       console.error('Export error:', err);

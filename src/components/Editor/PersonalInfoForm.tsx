@@ -1,11 +1,14 @@
-import { useResumeStore } from '../../stores/useResumeStore';
-import { User, Mail, Phone, MapPin, Linkedin, Globe, Camera } from 'lucide-react';
+import { useActiveResume, useResumeStore } from '../../stores/useResumeStore';
+import { User, Mail, Phone, MapPin, Linkedin, Globe, Camera, Plus, X } from 'lucide-react';
 import { useRef } from 'react';
 
 const PersonalInfoForm = () => {
-  const resume = useResumeStore((s) => s.activeResume());
+  const resume = useActiveResume();
   const updatePersonalInfo = useResumeStore((s) => s.updatePersonalInfo);
   const updatePhoto = useResumeStore((s) => s.updatePhoto);
+  const addCustomField = useResumeStore((s) => s.addCustomField);
+  const updateCustomField = useResumeStore((s) => s.updateCustomField);
+  const removeCustomField = useResumeStore((s) => s.removeCustomField);
   const fileRef = useRef<HTMLInputElement>(null);
 
   if (!resume) return null;
@@ -73,6 +76,44 @@ const PersonalInfoForm = () => {
         <Field icon={MapPin} label="Localização" field="location" placeholder="São Paulo, SP" />
         <Field icon={Linkedin} label="LinkedIn" field="linkedin" placeholder="linkedin.com/in/seu-perfil" half />
         <Field icon={Globe} label="Website" field="website" placeholder="seusite.com" half />
+      </div>
+
+      <div className="mt-5 border-t border-border pt-4">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Campos extras</p>
+            <p className="text-[11px] text-muted-foreground">Adicione links ou contatos adicionais</p>
+          </div>
+          <button onClick={addCustomField} className="btn-secondary text-xs py-1.5 px-2.5">
+            <Plus size={12} /> Campo
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          {info.customFields.map((field) => (
+            <div key={field.id} className="grid grid-cols-[120px_1fr_auto] gap-2">
+              <input
+                className="input-field !py-2 !text-xs"
+                placeholder="Rótulo"
+                value={field.label}
+                onChange={(e) => updateCustomField(field.id, { label: e.target.value })}
+              />
+              <input
+                className="input-field !py-2 !text-xs"
+                placeholder="Valor"
+                value={field.value}
+                onChange={(e) => updateCustomField(field.id, { value: e.target.value })}
+              />
+              <button onClick={() => removeCustomField(field.id)} className="btn-icon !w-8 !h-8 text-muted-foreground hover:text-destructive">
+                <X size={13} />
+              </button>
+            </div>
+          ))}
+
+          {info.customFields.length === 0 && (
+            <p className="text-xs text-muted-foreground">Nenhum campo extra adicionado.</p>
+          )}
+        </div>
       </div>
     </div>
   );

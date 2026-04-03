@@ -1,10 +1,10 @@
-import { useResumeStore } from '../../stores/useResumeStore';
+import { useActiveResume, useResumeStore } from '../../stores/useResumeStore';
 import { Plus, Trash2, GraduationCap, ChevronDown, Building2, Calendar, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import type { EducationItem } from '../../types/resume';
 
 const EducationForm = () => {
-  const resume = useResumeStore((s) => s.activeResume());
+  const resume = useActiveResume();
   const { addEducation, updateEducation, removeEducation } = useResumeStore();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 

@@ -32,6 +32,13 @@ const MinimalistTemplate = ({ data, theme }: Props) => {
               <span key={idx} className="flex items-center gap-1"><I size={9} />{v}</span>
           ))}
         </div>
+        {p.customFields.filter((field) => field.label || field.value).length > 0 && (
+          <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 mt-2 text-gray-500" style={{ fontSize: `${9 * fs}px` }}>
+            {p.customFields.filter((field) => field.label || field.value).map((field) => (
+              <span key={field.id}><span className="font-medium">{field.label || 'Extra'}:</span> {field.value}</span>
+            ))}
+          </div>
+        )}
       </div>
       <div className="h-px w-16 mx-auto mb-5" style={{ backgroundColor: c }} />
 

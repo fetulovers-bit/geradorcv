@@ -1,8 +1,8 @@
-import { useResumeStore } from '../../stores/useResumeStore';
+import { useActiveResume, useResumeStore } from '../../stores/useResumeStore';
 import { FileText, MessageSquare, AlignLeft } from 'lucide-react';
 
 const SummaryForm = () => {
-  const resume = useResumeStore((s) => s.activeResume());
+  const resume = useActiveResume();
   const { updateSummary, updateAdditionalInfo } = useResumeStore();
 
   if (!resume) return null;
