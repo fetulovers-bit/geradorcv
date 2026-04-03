@@ -25,7 +25,7 @@ const MinimalistTemplate = ({ data, theme }: Props) => {
           </div>
         )}
         <h1 className="font-light tracking-[0.08em] text-gray-900" style={{ fontSize: `${24 * fs}px` }}>{p.fullName || 'Seu Nome'}</h1>
-        <p className="mt-1 font-medium" style={{ color, fontSize: `${12 * fs}px` }}>{p.jobTitle || 'Seu Cargo'}</p>
+        <p className="mt-1 font-medium" style={{ color: c, fontSize: `${12 * fs}px` }}>{p.jobTitle || 'Seu Cargo'}</p>
         <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 mt-3 text-gray-500" style={{ fontSize: `${9 * fs}px` }}>
           {[{ i: Mail, v: p.email }, { i: Phone, v: p.phone }, { i: MapPin, v: p.location }, { i: Linkedin, v: p.linkedin }, { i: Globe, v: p.website }]
             .filter(x => x.v).map(({ i: I, v }, idx) => (
