@@ -15,11 +15,11 @@ echo "[auto-commit-push] Remote branch target: $BRANCH"
 echo "[auto-commit-push] Poll interval: ${INTERVAL_SECONDS}s"
 
 auto_commit_push() {
-  if git diff --quiet && git diff --cached --quiet; then
+  if [[ -z "$(git status --porcelain)" ]]; then
     return 0
   fi
 
-  git add .
+  git add -A .
 
   if git diff --cached --quiet; then
     return 0

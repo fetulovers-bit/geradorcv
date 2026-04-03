@@ -18,7 +18,7 @@ Opcionalmente, você pode passar outra branch:
 bash ./scripts/auto-commit-push.sh minha-branch
 ```
 
-O script verifica mudanças periodicamente (3s por padrão) e cria commits no formato:
+O script verifica mudanças periodicamente (3s por padrão), incluindo arquivos novos/não rastreados, e cria commits no formato:
 
 `chore: auto commit YYYY-MM-DD HH:MM:SS UTC`
 
