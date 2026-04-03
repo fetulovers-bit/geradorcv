@@ -12,7 +12,7 @@ const MinimalistTemplate = ({ data, theme }: Props) => {
   const sp = theme.spacing === 'compact' ? '14px' : theme.spacing === 'relaxed' ? '28px' : '20px';
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="font-medium tracking-[0.15em] mb-2.5 uppercase" style={{ color, fontFamily: ff, fontSize: `${10.5 * fs}px`, letterSpacing: '0.15em' }}>{children}</h3>
+    <h3 className="font-medium tracking-[0.15em] mb-2.5 uppercase" style={{ color: c, fontFamily: ff, fontSize: `${10.5 * fs}px`, letterSpacing: '0.15em' }}>{children}</h3>
   );
 
   return (
